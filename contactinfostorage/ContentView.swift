@@ -65,18 +65,20 @@ struct ContentView: View {
                         .frame(width: 50, height: 50)
                 }
             }
-            List(items) { item in
+                List { ForEach(items, id: \.self) { item in
                 NavigationLink(destination: PersonView(name: item.name ?? "unknown", phone: item.phone ?? "unknown", email: item.email ?? "unknown", address: item.address ?? "unknown")) { Text(item.name ?? "unknown") }
-            }
+                }.onDelete(perform: removeItem)
             }.navigationTitle("Contacts")
         }
+    }
+    
     }
     func removeItem(at offsets: IndexSet) {
         for index in offsets {
             let itm = items[index]
             PersistenceController.shared.delete(itm)
+            }
         }
-    }
 }
 
 struct ContentView_Previews: PreviewProvider {
