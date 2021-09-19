@@ -6,12 +6,71 @@
 //
 
 import SwiftUI
+import CoreData
+
+struct PersonView: View {
+    let name: String
+    let phone: String
+    let email: String
+    let address: String
+    var body: some View {
+        VStack{
+            Text("\(name)")
+            Text("\(phone)")
+            Text("\(email)")
+            Text("\(address)")
+        }
+    }
+}
+
+struct AddPersonView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @State var enteredName: String = ""
+    @State var enteredPhone: String = ""
+    @State var enteredEmail: String = ""
+    @State var enteredAddress: String = ""
+    var body: some View {
+        Text("Add New Contact")
+        TextField("Enter name", text: $enteredName)
+        TextField("Enter phone number", text: $enteredPhone)
+        TextField("Enter email address", text: $enteredEmail)
+        TextField("Enter address", text: $enteredAddress)
+        Button(action:{
+            let newContact = Person(context: managedObjectContext)
+            newContact.name = enteredName
+            newContact.phone = enteredPhone
+            newContact.email = enteredEmail
+            newContact.address = enteredAddress
+        }, label: {
+            Text("Add new contact")
+        })
+    }
+}
 
 struct ContentView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(
+        entity: Person.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \Person.name, ascending: true )])var items: FetchedResults<Person>
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        NavigationView{
+            VStack{
+            HStack{
+                Spacer()
+                NavigationLink(destination: AddPersonView()) {
+                    Image(systemName: "person.badge.plus").resizable()
+                        .frame(width: 50, height: 50)
+                }
+            }
+            List(items) { item in
+                Text(item.name ?? "unknown")
+                }
+            }
+        }.navigationTitle("Contacts")
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {

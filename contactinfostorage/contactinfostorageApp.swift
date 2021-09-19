@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import CoreData
 
 @main
 struct contactinfostorageApp: App {
+    let persistenceContainer = PersistenceController.shared
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().environment(\.managedObjectContext, persistenceContainer.container.viewContext)
         }
     }
 }
