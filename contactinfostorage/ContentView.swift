@@ -41,6 +41,7 @@ struct AddPersonView: View {
             newContact.phone = enteredPhone
             newContact.email = enteredEmail
             newContact.address = enteredAddress
+            PersistenceController.shared.save()
         }, label: {
             Text("Add new contact")
         })
@@ -65,16 +66,21 @@ struct ContentView: View {
                 }
             }
             List(items) { item in
-                Text(item.name ?? "unknown")
-                }
+                NavigationLink(destination: PersonView(name: item.name ?? "unknown", phone: item.phone ?? "unknown", email: item.email ?? "unknown", address: item.address ?? "unknown")) { Text(item.name ?? "unknown") }
             }
-        }.navigationTitle("Contacts")
+            }.navigationTitle("Contacts")
+        }
     }
-    
+    func removeItem(at offsets: IndexSet) {
+        for index in offsets {
+            let itm = items[index]
+            PersistenceController.shared.delete(itm)
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().preferredColorScheme(.light)
     }
 }
